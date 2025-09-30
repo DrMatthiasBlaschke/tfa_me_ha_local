@@ -8,6 +8,17 @@ This package allows you to fetch data from a TFA.me station.
 This module communicates directly towards the IP address of your TFA.me WiFi station in your local network.
 It is used to connect TFA.me stations to Home Assistant via an integration.
 
+See also on GitHub:
+
+This project **tfa_me_ha_local**:
+
+- [Source code](https://github.com/DrMatthiasBlaschke/tfa_me_ha_local).
+
+TFA.me integration for Home Assistant:
+
+- [Documenation](https://www.home-assistant.io/integrations/a_tfa_me_1)
+- [Source code](https://github.com/home-assistant/core/tree/dev/homeassistant/components/a_tfa_me_1)
+
 ## Installation
 
 ```bash
@@ -54,6 +65,10 @@ if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)
     asyncio.run(main())
 ```
+
+## Author
+
+The content is by [DrMatthiasBlaschke][DrMatthiasBlaschke].
 
 ## License
 
