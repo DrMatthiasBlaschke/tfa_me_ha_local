@@ -13,6 +13,13 @@ _LOGGER = logging.getLogger(__name__)
 """
 pip uninstall tfa-me-ha-local -y
 pip install -e .
+
+Set source to local path for library:
+source /Users/xxxxxxxx/ha_tfa_me/core/venv/bin/activate
+pip install -e .
+
+In HA terminal:
+pip show tfa-me-ha-local
 """
 
 

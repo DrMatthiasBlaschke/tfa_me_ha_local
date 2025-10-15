@@ -16,8 +16,8 @@ This project **tfa_me_ha_local**:
 
 TFA.me integration for Home Assistant:
 
-- [Documenation](https://www.home-assistant.io/integrations/a_tfa_me_1)
-- [Source code](https://github.com/home-assistant/core/tree/dev/homeassistant/components/a_tfa_me_1)
+- [Documenation](https://www.home-assistant.io/integrations/tfa_me)
+- [Source code](https://github.com/home-assistant/core/tree/dev/homeassistant/components/tfa_me)
 
 ## Installation
 

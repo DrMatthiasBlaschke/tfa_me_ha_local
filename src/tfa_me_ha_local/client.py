@@ -124,3 +124,4 @@ class TFAmeClient:
 
         """
         await self.close()
+
