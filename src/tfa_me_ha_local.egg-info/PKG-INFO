@@ -2,7 +2,11 @@ Metadata-Version: 2.4
 Name: tfa-me-ha-local
 Version: 1.0.1
 Summary: Python client for TFA.me weather stations
-Author-email: DrMatthiasBlaschke <tfa_me@synertronixx.de>
+Author-email: "Dr. Matthias Blaschke" <tfa_me@synertronixx.de>
+License: MIT
+Project-URL: Homepage, https://github.com/DrMatthiasBlaschke/tfa-me-ha-local
+Project-URL: Source, https://github.com/DrMatthiasBlaschke/tfa-me-ha-local
+Project-URL: Issues, https://github.com/DrMatthiasBlaschke/tfa-me-ha-local/issues
 Requires-Python: >=3.10
 Description-Content-Type: text/markdown
 License-File: LICENSE

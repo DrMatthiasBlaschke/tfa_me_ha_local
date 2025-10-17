@@ -5,6 +5,7 @@ src/tfa_me_ha_local/__init__.py
 src/tfa_me_ha_local/client.py
 src/tfa_me_ha_local/data.py
 src/tfa_me_ha_local/exceptions.py
+src/tfa_me_ha_local/history.py
 src/tfa_me_ha_local/validators.py
 src/tfa_me_ha_local.egg-info/PKG-INFO
 src/tfa_me_ha_local.egg-info/SOURCES.txt

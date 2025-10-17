@@ -7,8 +7,10 @@ name = "tfa-me-ha-local"
 version = "1.0.1"
 description = "Python client for TFA.me weather stations"
 authors = [
-  { name = "DrMatthiasBlaschke", email = "tfa_me@synertronixx.de" }
+  { name = "Dr. Matthias Blaschke", email = "tfa_me@synertronixx.de" }
 ]
+license = { text = "MIT" }
+
 readme = "README.md"
 requires-python = ">=3.10"
 
@@ -16,4 +18,8 @@ dependencies = [
     "aiohttp>=3.9.0",
 ]
 
+[project.urls]
+Homepage = "https://github.com/DrMatthiasBlaschke/tfa-me-ha-local"
+Source = "https://github.com/DrMatthiasBlaschke/tfa-me-ha-local"
+Issues = "https://github.com/DrMatthiasBlaschke/tfa-me-ha-local/issues"
 
