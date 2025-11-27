@@ -12,9 +12,6 @@ from tfa_me_ha_local.validators import TFAmeValidator
 
 _LOGGER = logging.getLogger(__name__)
 
-"""
-
-
 
 async def main() -> None:
     "Test some connections to real TFA.me devices."
