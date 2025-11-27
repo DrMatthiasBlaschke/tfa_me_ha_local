@@ -24,7 +24,7 @@ class SensorHistory:
             val_last = entry_last[0]
         if (ts_last != ts) & (val_last != value):
             self.data.append((value, ts))
-            self.cleanup()
+        self.cleanup()
 
     def cleanup(self):
         """Remove entries older max_age seconds."""
@@ -48,3 +48,40 @@ class SensorHistory:
         if not self.data:
             return None, None  # If list is empty
         return self.data[0], self.data[-1]  # First(oldest) and last(newest) entry
+
+    def clear(self) -> None:
+        """Remove all stored history values."""
+        self.data.clear()
+
+    def get_rain_amount(self) -> float:
+        """Return total rain amount over the stored period.
+
+        The history contains absolute counter values from the station.
+        Normally the counter is monotonically increasing. If the counter
+        overflows or is reset to zero, this is detected and handled.
+
+        Algorithm:
+        - Iterate over all consecutive values.
+        - If next >= prev: add (next - prev).
+        - If next < prev: counter was reset/overflowed, add 'next'
+          (i.e. rain since reset).
+        """
+        if len(self.data) < 2:
+            return 0.0
+
+        total = 0.0
+        prev_value = self.data[0][0]
+
+        # iterate over subsequent entries
+        for value, _ts in list(self.data)[1:]:
+            cur = float(value)
+            if cur >= prev_value:
+                # normal increase
+                total += cur - prev_value
+            else:
+                # counter reset or overflow -> assume reset to 0
+                total += cur
+            prev_value = cur
+
+        # Precision 2
+        return round(total, 2)   

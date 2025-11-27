@@ -31,6 +31,7 @@ class TFAmeClient:
         timeout: int = 5,
         session: aiohttp.ClientSession | None = None,
         log_level: int = 0,
+        close_session: bool = False
     ):
         """Initialize the TFA.me client.
 
@@ -40,6 +41,7 @@ class TFAmeClient:
             timeout: Timeout time to establish a connection
             session: Optional aiohttp.ClientSession. If not provided, a new one will be created and closed automatically.
             log_level: Log level for debug output.
+            close_session: Close session after fetching data
         """
         self._host = host
         self._path = path
@@ -47,6 +49,7 @@ class TFAmeClient:
         self._session = session
         self._data: dict = {}
         self._log_level = log_level
+        self._close_session = close_session
 
     async def async_get_sensors(self) -> dict:
         """Fetch sensor data from the gateway.
@@ -67,13 +70,15 @@ class TFAmeClient:
             msg: str = "Request URL '" + url + "'"
             _LOGGER.info(msg)
 
+        # 
+        session: aiohttp.ClientSession | None = self._session
+
         try:
-            # Reuse provided session or create a new one
-            session = self._session or aiohttp.ClientSession()
-
-            if session:
+             # Reuse provided session or create a new temporary one
+            if session is None:
+                session = aiohttp.ClientSession()
                 self._session = session
-
+     
             async with asyncio.timeout(self._timeout):
                 async with session.get(url) as resp:
                     if resp.status != 200:
@@ -102,8 +107,11 @@ class TFAmeClient:
         except Exception as err:
             raise TFAmeException(f"Unexpected error: {err}") from err
         finally:
-            # Close the session only if it was created before
-            if self._session is not None:
+            # Only close the session if we created it in this method
+            if self._close_session and session is not None:
+                if self._log_level >= 1:
+                    _LOGGER.debug("Close session")
+
                 await session.close()
 
     async def close(self) -> None:
@@ -117,11 +125,12 @@ class TFAmeClient:
 
     async def __aexit__(self, *_exc_info: object) -> None:
         """Async exit.
-
         Args:
         ----
             _exc_info: Exec type.
-
         """
+        if self._log_level >= 1:
+            _LOGGER.debug("Close session")
+
         await self.close()
 
