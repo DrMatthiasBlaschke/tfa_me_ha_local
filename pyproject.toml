@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "tfa-me-ha-local"
-version = "1.0.3"
+version = "1.0.5"
 description = "Python client for TFA.me weather stations"
 authors = [
   { name = "Dr. Matthias Blaschke", email = "tfa_me@synertronixx.de" }
@@ -14,12 +14,33 @@ license = { text = "MIT" }
 readme = "README.md"
 requires-python = ">=3.10"
 
+keywords = [
+  "home-assistant",
+  "tfa",
+  "tfa.me",
+  "weather",
+  "weather-station",
+  "iot",
+  "local",
+  "aiohttp",
+]
+
+classifiers = [
+  "Intended Audience :: Developers",
+  "License :: OSI Approved :: MIT License",
+  "Operating System :: OS Independent",
+  "Programming Language :: Python",
+  "Programming Language :: Python :: 3",
+  "Topic :: Home Automation",
+  "Topic :: Software Development :: Libraries :: Python Modules",
+]
+
 dependencies = [
     "aiohttp>=3.9.0",
 ]
 
 [project.urls]
-Homepage = "https://github.com/DrMatthiasBlaschke/tfa-me-ha-local"
-Source = "https://github.com/DrMatthiasBlaschke/tfa-me-ha-local"
-Issues = "https://github.com/DrMatthiasBlaschke/tfa-me-ha-local/issues"
+Homepage = "https://github.com/DrMatthiasBlaschke/tfa_me_ha_local"
+Source = "https://github.com/DrMatthiasBlaschke/tfa_me_ha_local"
+Issues = "https://github.com/DrMatthiasBlaschke/tfa_me_ha_local/issues"
 
