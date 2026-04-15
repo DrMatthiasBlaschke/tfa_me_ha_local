@@ -1,7 +1,7 @@
 Metadata-Version: 2.4
 Name: tfa-me-ha-local
-Version: 1.0.5
-Summary: Python client for TFA.me weather stations
+Version: 1.0.6
+Summary: Python client for TFA.me weather stations and gateways
 Author-email: "Dr. Matthias Blaschke" <tfa_me@synertronixx.de>
 License: MIT
 Project-URL: Homepage, https://github.com/DrMatthiasBlaschke/tfa_me_ha_local

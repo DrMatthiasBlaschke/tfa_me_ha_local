@@ -4,7 +4,6 @@ from collections import deque
 from datetime import datetime
 
 
-
 class SensorHistory:
     """Class to store a history, specially for rain sensor to calculate rain of last hour & last 24 hours)."""
 

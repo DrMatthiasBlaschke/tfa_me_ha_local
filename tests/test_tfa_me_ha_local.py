@@ -4,31 +4,57 @@ import datetime
 import json
 import logging
 import asyncio
+from typing import Any
 from tfa_me_ha_local.client import TFAmeClient
-from tfa_me_ha_local.data import TFAmeDataForHA
 from tfa_me_ha_local.exceptions import TFAmeException
 from tfa_me_ha_local.history import SensorHistory
 from tfa_me_ha_local.validators import TFAmeValidator
 
 _LOGGER = logging.getLogger(__name__)
 
+# Valid keys for creating entities
+VALID_KEYS = [
+    "temperature",
+    "temperature_probe",
+    "humidity",
+    "co2",
+    "barometric_pressure",
+    "rssi",
+    "lowbatt",
+    "wind_direction",
+    "wind_speed",
+    "wind_gust",
+    "rain",
+]
 
 async def main() -> None:
     "Test some connections to real TFA.me devices."
+    
+    json_data = {}  # Original JSON data for station/gateway
+    parsed_list: dict[str, dict[str, Any]] = {} # Created entity list
+    parsed_gateway_id : str # Station/gateway ID
+    parsed_gateway_sw : str # Station/gateway SW number
 
-    # Use here: Valid IP and path
-    json_data = {}  # dict
-    json_data = await client_test("192.168.1.35", "sensors", timeout=7)
-    tfa_me_data = TFAmeDataForHA(multiple_entities=False)
+  
+    # Test A: Use valid IP and path
+   
+    # 1. Create client
+    tfa_me_client = TFAmeClient("192.168.1.60", "sensors", timeout=7, log_level=1)
+    
+    # 2. Request JSON data from station/gateway 
+    json_data = await tfa_me_client.async_get_sensors()
+    
+    # 3. Parse data and create TFA.me varaiables
+    parsed_list, parsed_gateway_id, parsed_gateway_sw = tfa_me_client.parse_and_filter_json(json_data=json_data, valid_keys=VALID_KEYS) 
 
-    parsed_data = {}  # dict
-    parsed_data = tfa_me_data.json_to_entities(json_data=json_data)
-    _LOGGER.info("TFA.me data:\n'%s'", json.dumps(parsed_data, indent=2))
+    _LOGGER.info("TFA.me station ID: '%s'", parsed_gateway_id)
+    _LOGGER.info("TFA.me SW version: '%s'", parsed_gateway_sw)
+    _LOGGER.info("TFA.me data:\n'%s'", json.dumps(parsed_list, indent=2))
 
-    # Use here: IP not existing
+    # Test B: Use not existing IP 
     await client_test("192.168.1.35", "sensors")
 
-    # Use here: Path/URL wrong
+    # Test C: Use wrong path/URL
     await client_test("192.168.1.36", "xxx")
 
 

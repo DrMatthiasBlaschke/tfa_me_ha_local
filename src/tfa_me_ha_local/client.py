@@ -1,6 +1,5 @@
 """TFA.me library for Home Assistant: client.py."""
 
-# https://packaging.python.org/en/latest/tutorials/packaging-projects/
 
 import asyncio
 import json
@@ -19,6 +18,7 @@ from .exceptions import (
 
 # Debugging
 _LOGGER = logging.getLogger(__name__)
+
 
 
 class TFAmeClient:
@@ -133,4 +133,85 @@ class TFAmeClient:
             _LOGGER.debug("Close session")
 
         await self.close()
+
+
+    def parse_and_filter_json(
+        self, json_data: dict[str, Any], valid_keys: list[str],
+    ) -> tuple[dict[str, dict[str, Any]], str, str]:
+        """Parse a TFA.me station/gateway JSON dictionary to get TFAmeCoordinatorData values for coordinator.
+
+        Args:
+            json_data: JSON data from station/gateway
+            valid_keys: list with valid measurement keys
+
+        Raises:
+            TFAmeJSONError: JSON data from station/gateway was not valid.
+ 
+        Returns:
+            filtered_list: Filtered entity list
+            gateway_id: Gateway/station ID
+            gateway_sw: Gateway/station SW number
+        """
+
+        filtered_list: dict[
+            str, dict[str, Any]
+        ] = {}  # fitered list/dict with unique IDs & measurement data, units, etc.
+
+        try:
+            # Get gateway ID, SW version & sensor list
+            gateway_id = str(json_data.get("gateway_id", "tfame")).lower()
+            gateway_sw = str(json_data.get("gateway_sw", "?"))
+            sensors = json_data.get("sensors", [])
+
+            for sensor in sensors:
+                sensor_id = sensor["sensor_id"]
+
+                for m_name, values in sensor.get("measurements", {}).items():
+                    # if measurement_in_list(s = m_name, m_list = valid_keys):
+                    if m_name in valid_keys:
+                        # Unique ID build of "unique station/gateway ID" & "unique sensor ID"  & measurement name
+                        # (IDs set while production process)
+                        unique_id = f"sensor.{gateway_id}_{sensor_id}_{m_name}"
+
+                        # Minimum base data for all entities: value, unit, ts (timestamp)
+                        base = {
+                            "value": values["value"],  # Measurement value
+                            "unit": values["unit"], # Measurement unit
+                            "ts": sensor["ts"],  # UTC reception time stamp in seconds
+                        }
+                        filtered_list[unique_id] = base
+
+                        # Special cases
+                        # Wind direction: create extra entity for degrees
+                        if m_name == "wind_direction":
+                            deg_id = f"{unique_id}_deg"
+                            filtered_list[deg_id] = {
+                                **base,
+                                "unit": "°",
+                            }
+
+                        # Rain: create extra entity relative, 1 hour, 24 hours
+                        if m_name == "rain":
+                            # relative
+                            filtered_list[f"{unique_id}_rel"] = {
+                                **base,
+                                "reset_rain": False,
+                            }
+
+                            # 1 hour rain
+                            filtered_list[f"{unique_id}_1_hour"] = {
+                                **base,
+                                "reset_rain": False,
+                            }
+
+                            # 24 hours rain
+                            filtered_list[f"{unique_id}_24_hours"] = {
+                                **base,
+                                "reset_rain": False,
+                            }
+
+        except Exception as err:
+            raise TFAmeJSONError(f"Invalid JSON response: {err}") from err
+        else:
+            return filtered_list, gateway_id, gateway_sw
 
