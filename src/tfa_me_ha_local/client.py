@@ -8,6 +8,8 @@ import socket
 from typing import Any
 import aiohttp
 
+from tfa_me_ha_local.const import DEVICE_MAPPING
+
 from .exceptions import (
     TFAmeHTTPError,
     TFAmeJSONError,
@@ -22,7 +24,7 @@ _LOGGER = logging.getLogger(__name__)
 
 
 class TFAmeClient:
-    """Simple client to fetch sensor data from a TFA.me station."""
+    """Simple client to fetch sensor data from a TFA.me station/gateway."""
 
     def __init__(
         self,
@@ -62,7 +64,7 @@ class TFAmeClient:
             TFAmeException: Any other unexpected error.
 
         Returns:
-            Parsed JSON data as a dictionary.
+            JSON data as a dictionary.
         """
         url = f"http://{self._host}/{self._path}"
         if self._log_level >= 1:
@@ -215,3 +217,8 @@ class TFAmeClient:
         else:
             return filtered_list, gateway_id, gateway_sw
 
+
+    def get_device_description(self, serial: str) -> str:
+        """Return the device description for a TFA.me serial number."""
+        type_id = serial[:2].upper()
+        return DEVICE_MAPPING.get(type_id, "?")
