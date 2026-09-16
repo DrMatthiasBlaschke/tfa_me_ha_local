@@ -1,10 +1,11 @@
 """TFA.me library for Home Assistant: test_tfa_me_ha_local.py."""
 
+import asyncio
 import datetime
 import json
 import logging
-import asyncio
 from typing import Any
+
 from tfa_me_ha_local.client import TFAmeClient
 from tfa_me_ha_local.exceptions import TFAmeException
 from tfa_me_ha_local.history import SensorHistory

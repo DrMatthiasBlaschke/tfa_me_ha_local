@@ -185,32 +185,36 @@ class TFAmeClient:
 
                         # Special cases
                         # Wind direction: create extra entity for degrees
-                        if m_name == "wind_direction":
+                        if m_name == "wind_direction" and "wind_direction_deg" in valid_keys:
                             deg_id = f"{unique_id}_deg"
                             filtered_list[deg_id] = {
                                 **base,
                                 "unit": "°",
+                                "value": round(float(values["value"]) * 22.5, 1),
                             }
 
                         # Rain: create extra entity relative, 1 hour, 24 hours
                         if m_name == "rain":
-                            # relative
-                            filtered_list[f"{unique_id}_rel"] = {
-                                **base,
-                                "reset_rain": False,
-                            }
+                            if "rain_rel" in valid_keys:
+                                # relative
+                                filtered_list[f"{unique_id}_rel"] = {
+                                    **base,
+                                    "reset_rain": False,
+                                }
 
-                            # 1 hour rain
-                            filtered_list[f"{unique_id}_1_hour"] = {
-                                **base,
-                                "reset_rain": False,
-                            }
-
-                            # 24 hours rain
-                            filtered_list[f"{unique_id}_24_hours"] = {
-                                **base,
-                                "reset_rain": False,
-                            }
+                            if "rain_1_hour" in valid_keys:
+                                # 1 hour rain
+                                filtered_list[f"{unique_id}_1_hour"] = {
+                                    **base,
+                                    "reset_rain": False,
+                                }
+                            
+                            if "rain_24_hours" in valid_keys:
+                                # 24 hours rain
+                                filtered_list[f"{unique_id}_24_hours"] = {
+                                    **base,
+                                    "reset_rain": False,
+                                }
 
         except Exception as err:
             raise TFAmeJSONError(f"Invalid JSON response: {err}") from err
