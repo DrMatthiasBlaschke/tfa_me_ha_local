@@ -6,21 +6,21 @@ import json
 import logging
 import socket
 from typing import Any
+
 import aiohttp
 
-from tfa_me_ha_local.const import DEVICE_MAPPING
+from tfa_me_ha_local.const import DEVICE_MAPPING, TIMEOUT_FOR_5_MIN, TIMEOUT_MAPPING
 
 from .exceptions import (
+    TFAmeConnectionError,
+    TFAmeException,
     TFAmeHTTPError,
     TFAmeJSONError,
     TFAmeTimeoutError,
-    TFAmeException,
-    TFAmeConnectionError,
 )
 
 # Debugging
 _LOGGER = logging.getLogger(__name__)
-
 
 
 class TFAmeClient:
@@ -161,9 +161,27 @@ class TFAmeClient:
 
         try:
             # Get gateway ID, SW version & sensor list
-            gateway_id = str(json_data.get("gateway_id", "tfame")).lower()
+            gateway_id = json_data["gateway_id"]
+            if not isinstance(gateway_id, str):
+                raise TypeError("gateway_id must be a string")
+            if len(gateway_id) != 9:
+                raise ValueError("gateway_id must contain exactly 9 characters")
+            try:
+                int(gateway_id, 16)
+            except ValueError as err:
+                raise ValueError("gateway_id must be hexadecimal") from err
+
+            if int(gateway_id[:2], 16) >= 0xA0:
+                raise ValueError(
+                "first two characters of gateway_id must be below A0"
+            )
+
+            gateway_id = gateway_id.lower()
+            sensors = json_data["sensors"]
+            if not isinstance(sensors, list):
+                raise TypeError("sensors must be a list")
+
             gateway_sw = str(json_data.get("gateway_sw", "?"))
-            sensors = json_data.get("sensors", [])
 
             for sensor in sensors:
                 sensor_id = sensor["sensor_id"]
@@ -226,3 +244,12 @@ class TFAmeClient:
         """Return the device description for a TFA.me serial number."""
         type_id = serial[:2].upper()
         return DEVICE_MAPPING.get(type_id, "?")
+
+    def get_device_timeout(self, sensor_id: str) -> int:
+        """Return the timeout time for a station or sensor."""
+
+        try:
+            timeout_val = TIMEOUT_MAPPING[sensor_id[:2].upper()]
+        except KeyError:
+            timeout_val = TIMEOUT_FOR_5_MIN
+        return timeout_val
